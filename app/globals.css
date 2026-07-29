@@ -17,7 +17,7 @@
   --glass-hover: rgb(8 8 8 / 0.055);
   --button-bg: #080808;
   --button-fg: #ffffff;
-  --font-geist-sans: var(--font-jersey);
+  --font-geist-sans: var(--font-black-ops-one);
   --font-geist-mono: var(--font-oswald);
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 36px rgb(0 0 0 / 0.045);
   --shadow-md: 0 24px 70px rgb(0 0 0 / 0.12);
@@ -46,7 +46,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-jersey);
+  --font-sans: var(--font-black-ops-one);
   --font-mono: var(--font-oswald);
 }
 
@@ -62,7 +62,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-jersey), var(--font-oswald), Arial, sans-serif;
+  font-family: var(--font-black-ops-one), var(--font-oswald), Arial, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -243,7 +243,7 @@ button:disabled {
   border-radius: 9px;
   background: var(--foreground);
   color: var(--orange);
-  font-family: var(--font-jersey-charted), var(--font-jersey), sans-serif;
+  font-family: var(--font-black-ops-one), var(--font-oswald), sans-serif;
   font-size: 14px;
   font-weight: 850;
   letter-spacing: -0.13em;
@@ -3688,7 +3688,7 @@ h4,
 .brand-logo,
 .public-nav-links,
 .app-nav-links {
-  font-family: var(--font-jersey), var(--font-oswald), sans-serif;
+  font-family: var(--font-black-ops-one), var(--font-oswald), sans-serif;
   font-weight: 400;
 }
 

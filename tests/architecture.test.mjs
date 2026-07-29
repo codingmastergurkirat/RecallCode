@@ -50,12 +50,18 @@ test("Next.js 16 Proxy refreshes the Supabase session", async () => {
 test("Piston execution supports provider authentication and clear failures", async () => {
   const service = await read("services/piston.service.ts");
   const environment = await read(".env.example");
+  const setup = await read("PISTON_SETUP.md");
   assert.match(service, /PISTON_AUTH_HEADER/);
   assert.match(service, /PISTON_AUTH_VALUE/);
   assert.match(service, /PistonServiceError/);
   assert.match(service, /February 15, 2026/);
   assert.match(environment, /PISTON_AUTH_HEADER=/);
   assert.match(environment, /PISTON_AUTH_VALUE=/);
+  assert.match(setup, /Option A: Authorized EMKC public API/);
+  assert.match(setup, /Option B: A hosted Piston-compatible provider/);
+  assert.match(setup, /Configure Vercel/);
+  assert.match(setup, /Troubleshooting/);
+  assert.match(setup, /Never commit the real token/);
 });
 
 test("hackathon email uses only Supabase Auth's built-in sender", async () => {
@@ -70,4 +76,14 @@ test("hackathon email uses only Supabase Auth's built-in sender", async () => {
   assert.match(authForm, /supabase\.auth\.signUp/);
   assert.match(authForm, /supabase\.auth\.resetPasswordForEmail/);
   assert.match(authForm, /email_address_not_authorized/);
+});
+
+test("the visual system uses Black Ops One with Oswald fallback", async () => {
+  const layout = await read("app/layout.tsx");
+  const styles = await read("app/globals.css");
+  assert.match(layout, /Black_Ops_One/);
+  assert.doesNotMatch(layout, /Jersey_/);
+  assert.match(styles, /--font-black-ops-one/);
+  assert.match(styles, /var\(--font-oswald\)/);
+  assert.doesNotMatch(styles, /font-jersey/);
 });

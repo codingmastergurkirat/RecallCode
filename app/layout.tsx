@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
-import {
-  Jersey_10,
-  Jersey_10_Charted,
-  Oswald,
-} from "next/font/google";
+import { Black_Ops_One, Oswald } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 
-const jersey = Jersey_10({
-  variable: "--font-jersey",
-  weight: "400",
-  subsets: ["latin"],
-});
-
-const jerseyCharted = Jersey_10_Charted({
-  variable: "--font-jersey-charted",
+const blackOpsOne = Black_Ops_One({
+  variable: "--font-black-ops-one",
   weight: "400",
   subsets: ["latin"],
 });
@@ -82,7 +72,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${jersey.variable} ${jerseyCharted.variable} ${oswald.variable} antialiased`}
+        className={`${blackOpsOne.variable} ${oswald.variable} antialiased`}
       >
         {children}
       </body>

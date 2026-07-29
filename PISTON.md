@@ -3,6 +3,9 @@
 RecallCode calls Piston from server route handlers. The browser never contacts
 the executor directly.
 
+For provider selection, credentials, local and Vercel configuration, direct
+smoke tests, and troubleshooting, read [PISTON_SETUP.md](PISTON_SETUP.md).
+
 ## Why Run and Submit need credentials
 
 The shared EMKC Piston API is no longer freely available as of February 15,
