@@ -1,15 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  Jersey_10,
+  Jersey_10_Charted,
+  Oswald,
+} from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jersey = Jersey_10({
+  variable: "--font-jersey",
+  weight: "400",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jerseyCharted = Jersey_10_Charted({
+  variable: "--font-jersey-charted",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const oswald = Oswald({
+  variable: "--font-oswald",
   subsets: ["latin"],
 });
 
@@ -40,8 +51,8 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         {
           url: new URL("/og.png", base).toString(),
-          width: 1792,
-          height: 922,
+          width: 1748,
+          height: 899,
           alt: "RecallCode — Solve once. Recall for good.",
         },
       ],
@@ -61,17 +72,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var t=localStorage.getItem('recallcode-theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}",
+              "try{var t=localStorage.getItem('recallcode-theme');document.documentElement.classList.toggle('dark',t!=='light')}catch(e){}",
           }}
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${jersey.variable} ${jerseyCharted.variable} ${oswald.variable} antialiased`}
       >
         {children}
       </body>

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { executeCode } from "@/services/piston.service";
+import {
+  executeCode,
+  PistonServiceError,
+} from "@/services/piston.service";
 
 const schema = z.object({
   language: z.enum(["javascript", "typescript", "python", "java", "cpp"]),
@@ -29,6 +32,9 @@ export async function POST(request: Request) {
         : error instanceof Error
           ? error.message
           : "Execution failed.";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json(
+      { error: message },
+      { status: error instanceof PistonServiceError ? error.httpStatus : 400 },
+    );
   }
 }

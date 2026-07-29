@@ -26,8 +26,8 @@ export function ActivityChart({ data }: { data: ActivityPoint[] }) {
         <AreaChart data={chartData} margin={{ top: 10, right: 4, left: -28, bottom: 0 }}>
           <defs>
             <linearGradient id="activityFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f97316" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#f97316" stopOpacity={0.02} />
+              <stop offset="0%" stopColor="#c5a059" stopOpacity={0.24} />
+              <stop offset="100%" stopColor="#c5a059" stopOpacity={0.01} />
             </linearGradient>
           </defs>
           <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 5" />
@@ -45,7 +45,7 @@ export function ActivityChart({ data }: { data: ActivityPoint[] }) {
             tick={{ fill: "var(--muted)", fontSize: 11 }}
           />
           <Tooltip
-            cursor={{ stroke: "#f97316", strokeDasharray: "3 3" }}
+            cursor={{ stroke: "#c5a059", strokeDasharray: "3 3" }}
             contentStyle={{
               border: "1px solid var(--border)",
               borderRadius: 12,
@@ -58,7 +58,7 @@ export function ActivityChart({ data }: { data: ActivityPoint[] }) {
             type="monotone"
             dataKey="solved"
             name="Problems solved"
-            stroke="#f97316"
+            stroke="#c5a059"
             strokeWidth={2.5}
             fill="url(#activityFill)"
           />
@@ -66,7 +66,7 @@ export function ActivityChart({ data }: { data: ActivityPoint[] }) {
             type="monotone"
             dataKey="reviews"
             name="Reviews"
-            stroke="#171717"
+            stroke="var(--muted-strong)"
             strokeWidth={1.5}
             strokeDasharray="4 4"
             fill="transparent"

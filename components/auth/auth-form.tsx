@@ -3,6 +3,7 @@
 import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { isAuthApiError } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -34,6 +35,18 @@ const copy: Record<
     button: "Update password",
   },
 };
+
+function authErrorMessage(error: unknown) {
+  if (isAuthApiError(error)) {
+    if (error.code === "email_address_not_authorized") {
+      return "Email delivery is limited for this demo. Continue with Google or use an approved demo address.";
+    }
+    if (error.code === "over_email_send_rate_limit") {
+      return "The demo email limit has been reached. Try again later or continue with Google.";
+    }
+  }
+  return error instanceof Error ? error.message : "Something went wrong.";
+}
 
 export function AuthForm({
   mode,
@@ -131,7 +144,7 @@ export function AuthForm({
     } catch (error) {
       setMessage({
         type: "error",
-        text: error instanceof Error ? error.message : "Something went wrong.",
+        text: authErrorMessage(error),
       });
     } finally {
       setLoading(false);

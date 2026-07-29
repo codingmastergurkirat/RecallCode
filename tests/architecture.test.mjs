@@ -46,3 +46,28 @@ test("Next.js 16 Proxy refreshes the Supabase session", async () => {
   assert.match(sessionProxy, /supabase\.auth\.getUser\(\)/);
   assert.match(sessionProxy, /NextResponse\.redirect/);
 });
+
+test("Piston execution supports provider authentication and clear failures", async () => {
+  const service = await read("services/piston.service.ts");
+  const environment = await read(".env.example");
+  assert.match(service, /PISTON_AUTH_HEADER/);
+  assert.match(service, /PISTON_AUTH_VALUE/);
+  assert.match(service, /PistonServiceError/);
+  assert.match(service, /February 15, 2026/);
+  assert.match(environment, /PISTON_AUTH_HEADER=/);
+  assert.match(environment, /PISTON_AUTH_VALUE=/);
+});
+
+test("hackathon email uses only Supabase Auth's built-in sender", async () => {
+  const setup = await read("SUPABASE_SETUP.md");
+  const environment = await read(".env.example");
+  const authForm = await read("components/auth/auth-form.tsx");
+  assert.match(setup, /Supabase Auth's built-in email sender/);
+  assert.match(setup, /\{\{ \.ConfirmationURL \}\}/);
+  assert.match(setup, /two messages per hour/);
+  assert.doesNotMatch(setup, /smtp\.resend\.com/i);
+  assert.doesNotMatch(environment, /RESEND_API_KEY/);
+  assert.match(authForm, /supabase\.auth\.signUp/);
+  assert.match(authForm, /supabase\.auth\.resetPasswordForEmail/);
+  assert.match(authForm, /email_address_not_authorized/);
+});

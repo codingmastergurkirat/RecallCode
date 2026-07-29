@@ -86,8 +86,9 @@ interface ExistingFeedback {
 }
 
 function outputFrom(result: ExecutionResult) {
-  const compileOutput = result.compile?.output?.trim();
-  const runOutput = result.run.output?.trim();
+  const compileOutput =
+    result.compile?.output?.trim() || result.compile?.message?.trim();
+  const runOutput = result.run.output?.trim() || result.run.message?.trim();
   if (compileOutput) return compileOutput;
   if (runOutput) return runOutput;
   return "Program finished with no output.";

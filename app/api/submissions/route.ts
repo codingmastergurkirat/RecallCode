@@ -5,6 +5,7 @@ import { generateLearningPack } from "@/services/ai.service";
 import {
   executeCode,
   executionSucceeded,
+  PistonServiceError,
 } from "@/services/piston.service";
 import type { Json, SubmissionStatus } from "@/types/database";
 
@@ -106,6 +107,9 @@ export async function POST(request: Request) {
         : error instanceof Error
           ? error.message
           : "Submission failed.";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json(
+      { error: message },
+      { status: error instanceof PistonServiceError ? error.httpStatus : 400 },
+    );
   }
 }

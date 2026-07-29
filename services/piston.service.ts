@@ -22,6 +22,11 @@ interface PistonStage {
   output: string;
   code: number | null;
   signal: string | null;
+  status: string | null;
+  message: string;
+  cpuTime: number | null;
+  wallTime: number | null;
+  memory: number | null;
 }
 
 export interface ExecutionResult {
@@ -39,6 +44,81 @@ const runtimeAliases: Record<SupportedLanguage, string[]> = {
   java: ["java"],
   cpp: ["c++", "cpp", "gcc"],
 };
+
+export class PistonServiceError extends Error {
+  constructor(
+    message: string,
+    public readonly httpStatus = 503,
+  ) {
+    super(message);
+    this.name = "PistonServiceError";
+  }
+}
+
+function getPistonHeaders(includeJson = false): Record<string, string> {
+  const headerName = process.env.PISTON_AUTH_HEADER?.trim();
+  const headerValue = process.env.PISTON_AUTH_VALUE?.trim();
+
+  if (Boolean(headerName) !== Boolean(headerValue)) {
+    throw new PistonServiceError(
+      "Piston authentication is incomplete. Set both PISTON_AUTH_HEADER and PISTON_AUTH_VALUE.",
+      500,
+    );
+  }
+
+  return {
+    ...(includeJson ? { "content-type": "application/json" } : {}),
+    ...(headerName && headerValue ? { [headerName]: headerValue } : {}),
+  };
+}
+
+function assertExecutorConfigured(baseUrl: string) {
+  let host = "";
+  try {
+    host = new URL(baseUrl).hostname.toLowerCase();
+  } catch {
+    throw new PistonServiceError(
+      "PISTON_API_URL must be a valid URL that ends at the Piston API base.",
+      500,
+    );
+  }
+
+  if (
+    (host === "emkc.org" || host.endsWith(".emkc.org")) &&
+    !process.env.PISTON_AUTH_VALUE?.trim()
+  ) {
+    throw new PistonServiceError(
+      "The EMKC Piston API requires authorization as of February 15, 2026. Add the exact header supplied by your executor with PISTON_AUTH_HEADER and PISTON_AUTH_VALUE, or point PISTON_API_URL at another compatible hosted Piston API.",
+      503,
+    );
+  }
+}
+
+async function pistonResponseError(
+  response: Response,
+  action: string,
+): Promise<PistonServiceError> {
+  let detail = "";
+  try {
+    const body: unknown = await response.json();
+    if (body && typeof body === "object") {
+      const record = body as Record<string, unknown>;
+      const candidate = record.message ?? record.error;
+      if (typeof candidate === "string") detail = candidate;
+    }
+  } catch {
+    // A non-JSON upstream response is still represented by its HTTP status.
+  }
+
+  const status = `${response.status}${
+    response.statusText ? ` ${response.statusText}` : ""
+  }`;
+  const suffix = detail ? ` ${detail.slice(0, 240)}` : "";
+  return new PistonServiceError(
+    `Piston ${action} failed (${status}).${suffix}`,
+    response.status === 429 ? 429 : 503,
+  );
+}
 
 function isRuntime(value: unknown): value is Runtime {
   if (!value || typeof value !== "object") return false;
@@ -61,6 +141,11 @@ function normalizeStage(value: unknown): PistonStage {
     output: typeof stage.output === "string" ? stage.output : "",
     code: typeof stage.code === "number" ? stage.code : null,
     signal: typeof stage.signal === "string" ? stage.signal : null,
+    status: typeof stage.status === "string" ? stage.status : null,
+    message: typeof stage.message === "string" ? stage.message : "",
+    cpuTime: typeof stage.cpu_time === "number" ? stage.cpu_time : null,
+    wallTime: typeof stage.wall_time === "number" ? stage.wall_time : null,
+    memory: typeof stage.memory === "number" ? stage.memory : null,
   };
 }
 
@@ -72,14 +157,26 @@ export async function executeCode(input: {
   const baseUrl = (
     process.env.PISTON_API_URL ?? DEFAULT_PISTON_URL
   ).replace(/\/$/, "");
+  assertExecutorConfigured(baseUrl);
+  const headers = getPistonHeaders();
   const aliases = runtimeAliases[input.language];
 
-  const runtimesResponse = await fetch(`${baseUrl}/runtimes`, {
-    cache: "no-store",
-    signal: AbortSignal.timeout(12_000),
-  });
+  let runtimesResponse: Response;
+  try {
+    runtimesResponse = await fetch(`${baseUrl}/runtimes`, {
+      headers,
+      cache: "no-store",
+      signal: AbortSignal.timeout(12_000),
+    });
+  } catch (error) {
+    throw new PistonServiceError(
+      error instanceof Error && error.name === "TimeoutError"
+        ? "Piston did not return its runtime list within 12 seconds."
+        : "RecallCode could not reach the configured Piston service.",
+    );
+  }
   if (!runtimesResponse.ok) {
-    throw new Error("The code execution service is unavailable.");
+    throw await pistonResponseError(runtimesResponse, "runtime lookup");
   }
   const runtimesValue: unknown = await runtimesResponse.json();
   const runtimes = Array.isArray(runtimesValue)
@@ -93,30 +190,46 @@ export async function executeCode(input: {
   });
 
   if (!runtime) {
-    throw new Error(`${input.language} is not available on the executor.`);
+    throw new PistonServiceError(
+      `${input.language} is not installed on the configured executor.`,
+      422,
+    );
   }
 
   const startedAt = performance.now();
-  const response = await fetch(`${baseUrl}/execute`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      language: runtime.language,
-      version: runtime.version,
-      files: [{ name: `main.${extensionFor(input.language)}`, content: input.code }],
-      stdin: input.stdin ?? "",
-      compile_timeout: 10_000,
-      run_timeout: 5_000,
-      compile_memory_limit: 512_000_000,
-      run_memory_limit: 256_000_000,
-    }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(20_000),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${baseUrl}/execute`, {
+      method: "POST",
+      headers: getPistonHeaders(true),
+      body: JSON.stringify({
+        language: runtime.language,
+        version: runtime.version,
+        files: [
+          {
+            name: `main.${extensionFor(input.language)}`,
+            content: input.code,
+          },
+        ],
+        stdin: input.stdin ?? "",
+        compile_timeout: 10_000,
+        run_timeout: 5_000,
+        compile_memory_limit: 512_000_000,
+        run_memory_limit: 256_000_000,
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(20_000),
+    });
+  } catch (error) {
+    throw new PistonServiceError(
+      error instanceof Error && error.name === "TimeoutError"
+        ? "Code execution exceeded the 20-second upstream limit."
+        : "RecallCode could not reach the configured Piston service.",
+    );
+  }
 
-  const runtimeMs = Math.round(performance.now() - startedAt);
   if (!response.ok) {
-    throw new Error("Code execution failed. Please try again.");
+    throw await pistonResponseError(response, "execution");
   }
 
   const value: unknown = await response.json();
@@ -124,6 +237,8 @@ export async function executeCode(input: {
     throw new Error("The executor returned an invalid response.");
   }
   const result = value as Record<string, unknown>;
+  const run = normalizeStage(result.run);
+  const measuredRuntimeMs = Math.round(performance.now() - startedAt);
 
   return {
     language:
@@ -131,8 +246,9 @@ export async function executeCode(input: {
     version:
       typeof result.version === "string" ? result.version : runtime.version,
     compile: result.compile ? normalizeStage(result.compile) : undefined,
-    run: normalizeStage(result.run),
-    runtimeMs,
+    run,
+    runtimeMs:
+      run.wallTime !== null ? Math.max(0, Math.round(run.wallTime)) : measuredRuntimeMs,
   };
 }
 
