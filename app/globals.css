@@ -17,8 +17,8 @@
   --glass-hover: rgb(8 8 8 / 0.055);
   --button-bg: #080808;
   --button-fg: #ffffff;
-  --font-geist-sans: var(--font-black-ops-one);
-  --font-geist-mono: var(--font-oswald);
+  --font-geist-sans: var(--font-inter);
+  --font-geist-mono: var(--font-inter);
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 36px rgb(0 0 0 / 0.045);
   --shadow-md: 0 24px 70px rgb(0 0 0 / 0.12);
   --nav-height: 68px;
@@ -46,8 +46,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-black-ops-one);
-  --font-mono: var(--font-oswald);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-inter);
 }
 
 * {
@@ -62,7 +62,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-black-ops-one), var(--font-oswald), Arial, sans-serif;
+  font-family: var(--font-inter), Arial, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -243,7 +243,7 @@ button:disabled {
   border-radius: 9px;
   background: var(--foreground);
   color: var(--orange);
-  font-family: var(--font-black-ops-one), var(--font-oswald), sans-serif;
+  font-family: var(--font-inter), Arial, sans-serif;
   font-size: 14px;
   font-weight: 850;
   letter-spacing: -0.13em;
@@ -3678,7 +3678,7 @@ select,
 textarea,
 pre,
 .button {
-  font-family: var(--font-oswald), Arial, sans-serif;
+  font-family: var(--font-inter), Arial, sans-serif;
 }
 
 h1,
@@ -3688,7 +3688,7 @@ h4,
 .brand-logo,
 .public-nav-links,
 .app-nav-links {
-  font-family: var(--font-black-ops-one), var(--font-oswald), sans-serif;
+  font-family: var(--font-inter), Arial, sans-serif;
   font-weight: 400;
 }
 
@@ -3824,7 +3824,7 @@ textarea {
 }
 
 .hero-proof {
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-inter), Arial, sans-serif;
   font-size: 13px;
   letter-spacing: 0.025em;
 }
@@ -4006,7 +4006,7 @@ textarea {
 }
 
 .footer-inner {
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-inter), Arial, sans-serif;
   font-size: 14px;
 }
 
@@ -4172,5 +4172,229 @@ textarea {
 
   .stat-card {
     min-height: 130px;
+  }
+}
+
+/* Inter typography and compact navigation/data surfaces */
+body,
+button,
+input,
+select,
+textarea,
+pre,
+code {
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-weight: 400;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.brand-logo,
+.brand-mark {
+  font-weight: 600 !important;
+}
+
+strong,
+b,
+label,
+.button,
+.eyebrow,
+.page-kicker,
+.card-kicker,
+.preview-kicker,
+.public-nav-links,
+.app-nav-links,
+.mobile-nav nav a,
+.mobile-signout,
+.workspace-tabs button,
+.filter-tabs a,
+.review-mode-tabs a,
+.flashcard-label,
+.difficulty {
+  font-weight: 500 !important;
+}
+
+.public-nav-links,
+.app-nav-links {
+  gap: 16px;
+  font-size: 15px;
+}
+
+.public-nav-links a,
+.app-nav-links a {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+.mobile-nav nav a,
+.mobile-signout {
+  padding-right: 10px;
+  padding-left: 10px;
+  font-size: 15px;
+}
+
+.workspace-tabs button,
+.filter-tabs a,
+.review-mode-tabs a {
+  font-size: 13px;
+}
+
+.filter-tabs a {
+  padding: 7px 10px;
+}
+
+.problem-list-head {
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.problem-row {
+  min-height: 78px;
+  padding: 10px 16px;
+}
+
+.problem-title-cell > a {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.problem-title-cell > span {
+  font-size: 11px;
+}
+
+.problem-title-cell small,
+.problem-tags span {
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+.problem-pattern,
+.problem-time {
+  font-size: 12px;
+}
+
+.problem-status,
+.difficulty {
+  font-size: 10px;
+}
+
+.flashcard-item footer > div:first-child {
+  min-width: 0;
+}
+
+.flashcard-item footer > div:first-child a,
+.flashcard-item footer > div:first-child > span {
+  display: block;
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flashcard-item footer small {
+  font-size: 10px;
+}
+
+.flashcard-footer-actions {
+  display: flex !important;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px !important;
+}
+
+.flashcard-status {
+  border-radius: 999px;
+  background: var(--surface);
+  padding: 5px 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.flashcard-delete-trigger,
+.flashcard-delete-confirm button {
+  display: inline-flex;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.flashcard-delete-trigger {
+  width: 30px;
+  padding: 0;
+}
+
+.flashcard-delete-trigger:hover,
+.flashcard-delete-confirm button:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--glass-hover);
+  color: var(--foreground);
+}
+
+.flashcard-delete-confirm {
+  display: flex;
+  gap: 5px;
+}
+
+.flashcard-delete-confirm button {
+  gap: 5px;
+  padding: 0 8px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.flashcard-delete-confirm .confirm-delete {
+  border-color: var(--border-strong);
+  color: var(--foreground);
+}
+
+.flashcard-delete-confirm .confirm-delete svg {
+  animation: none;
+}
+
+.flashcard-delete-confirm .confirm-delete:disabled svg {
+  animation: spin 0.7s linear infinite;
+}
+
+.flashcard-delete-error {
+  grid-column: 1 / -1;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--glass);
+  padding: 10px 12px;
+  color: var(--foreground);
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .problem-row {
+    padding: 10px;
+  }
+
+  .problem-title-cell > a {
+    font-size: 14px;
+  }
+
+  .flashcard-item footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .flashcard-footer-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 }

@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import { Black_Ops_One, Oswald } from "next/font/google";
+import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 
-const blackOpsOne = Black_Ops_One({
-  variable: "--font-black-ops-one",
-  weight: "400",
-  subsets: ["latin"],
-});
-
-const oswald = Oswald({
-  variable: "--font-oswald",
+const inter = Inter({
+  variable: "--font-inter",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
 
@@ -71,9 +66,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body
-        className={`${blackOpsOne.variable} ${oswald.variable} antialiased`}
-      >
+      <body className={`${inter.variable} antialiased`}>
         {children}
       </body>
     </html>

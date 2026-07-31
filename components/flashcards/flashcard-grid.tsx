@@ -1,15 +1,22 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
+import { LoaderCircle, RotateCcw, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import type { getFlashcardDeck } from "@/services/review.service";
 import { formatDate } from "@/lib/utils";
 
 type CardItem = Awaited<ReturnType<typeof getFlashcardDeck>>["cards"][number];
 
-export function FlashcardGrid({ cards }: { cards: CardItem[] }) {
+export function FlashcardGrid({ cards: initialCards }: { cards: CardItem[] }) {
+  const router = useRouter();
+  const [cards, setCards] = useState(initialCards);
   const [flipped, setFlipped] = useState<Set<string>>(new Set());
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   function toggle(id: string) {
     setFlipped((current) => {
@@ -20,8 +27,49 @@ export function FlashcardGrid({ cards }: { cards: CardItem[] }) {
     });
   }
 
+  async function deleteCard(id: string) {
+    setDeletingId(id);
+    setDeleteError(null);
+
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("flashcards")
+        .delete()
+        .eq("id", id)
+        .select("id");
+
+      if (error) throw error;
+      if (data.length !== 1) {
+        throw new Error("This flashcard could not be deleted.");
+      }
+
+      setCards((current) => current.filter((card) => card.id !== id));
+      setFlipped((current) => {
+        const next = new Set(current);
+        next.delete(id);
+        return next;
+      });
+      setConfirmingId(null);
+      router.refresh();
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete this flashcard.",
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <div className="flashcard-grid">
+      {deleteError ? (
+        <div className="flashcard-delete-error" role="alert">
+          {deleteError}
+        </div>
+      ) : null}
       {cards.map((card) => {
         const relationship = card.questions;
         const question = Array.isArray(relationship)
@@ -29,7 +77,10 @@ export function FlashcardGrid({ cards }: { cards: CardItem[] }) {
           : relationship;
         const isFlipped = flipped.has(card.id);
         return (
-          <article className={`flashcard-item ${isFlipped ? "flipped" : ""}`} key={card.id}>
+          <article
+            className={`flashcard-item ${isFlipped ? "flipped" : ""}`}
+            key={card.id}
+          >
             <button
               className="flashcard-face"
               type="button"
@@ -58,7 +109,48 @@ export function FlashcardGrid({ cards }: { cards: CardItem[] }) {
                     : `Review ${formatDate(card.review_date)}`}
                 </small>
               </div>
-              <span>{card.repetitions >= 4 ? "Mastered" : "Learning"}</span>
+              <div className="flashcard-footer-actions">
+                <span className="flashcard-status">
+                  {card.repetitions >= 4 ? "Mastered" : "Learning"}
+                </span>
+                {confirmingId === card.id ? (
+                  <div className="flashcard-delete-confirm">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingId(null)}
+                      disabled={deletingId === card.id}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="confirm-delete"
+                      type="button"
+                      onClick={() => deleteCard(card.id)}
+                      disabled={deletingId === card.id}
+                    >
+                      {deletingId === card.id ? (
+                        <LoaderCircle aria-hidden="true" size={13} />
+                      ) : (
+                        <Trash2 aria-hidden="true" size={13} />
+                      )}
+                      Delete
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="flashcard-delete-trigger"
+                    type="button"
+                    onClick={() => {
+                      setDeleteError(null);
+                      setConfirmingId(card.id);
+                    }}
+                    aria-label={`Delete flashcard: ${card.front}`}
+                    title="Delete flashcard"
+                  >
+                    <Trash2 aria-hidden="true" size={15} />
+                  </button>
+                )}
+              </div>
             </footer>
           </article>
         );

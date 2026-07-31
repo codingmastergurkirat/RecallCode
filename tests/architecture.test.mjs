@@ -85,12 +85,25 @@ test("hackathon email uses only Supabase Auth's built-in sender", async () => {
   assert.match(authForm, /email_address_not_authorized/);
 });
 
-test("the visual system uses Black Ops One with Oswald fallback", async () => {
+test("the visual system uses Inter across the product", async () => {
   const layout = await read("app/layout.tsx");
   const styles = await read("app/globals.css");
-  assert.match(layout, /Black_Ops_One/);
-  assert.doesNotMatch(layout, /Jersey_/);
-  assert.match(styles, /--font-black-ops-one/);
-  assert.match(styles, /var\(--font-oswald\)/);
-  assert.doesNotMatch(styles, /font-jersey/);
+  assert.match(layout, /import \{ Inter \} from "next\/font\/google"/);
+  assert.match(layout, /weight: \["400", "500", "600"\]/);
+  assert.match(styles, /--font-inter/);
+  assert.doesNotMatch(layout, /Black_Ops_One|Oswald|Jersey_/);
+  assert.doesNotMatch(styles, /font-black-ops-one|font-oswald|font-jersey/);
+  assert.match(styles, /\.app-nav-links[\s\S]*font-size: 15px/);
+  assert.match(styles, /\.problem-title-cell > a[\s\S]*font-size: 15px/);
+});
+
+test("flashcards can be deleted through owner-scoped Supabase RLS", async () => {
+  const grid = await read("components/flashcards/flashcard-grid.tsx");
+  const schema = await read("database/migrations/0001_initial_schema.sql");
+  assert.match(grid, /\.from\("flashcards"\)[\s\S]*\.delete\(\)/);
+  assert.match(grid, /\.eq\("id", id\)/);
+  assert.match(grid, /router\.refresh\(\)/);
+  assert.match(grid, /Delete flashcard:/);
+  assert.match(schema, /Users can delete their flashcards/);
+  assert.match(schema, /flashcard_id uuid not null references public\.flashcards\(id\) on delete cascade/);
 });
