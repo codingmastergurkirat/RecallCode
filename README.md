@@ -14,12 +14,12 @@ NeetCode 150 seed contains metadata and source links only.
 - Supabase PostgreSQL and Supabase Auth
 - Official `@supabase/ssr` cookie-based session handling
 - Monaco Editor, Recharts, Lucide React
-- Piston for isolated code execution
+- Self-hosted Piston in Docker for isolated code execution
 - Groq AI with automatic Gemini fallback
 - Vercel deployment target
 
-No Clerk, NextAuth, Auth.js, Firebase, Prisma, MongoDB, OpenAI API, or Docker is
-used.
+No Clerk, NextAuth, Auth.js, Firebase, Prisma, MongoDB, or OpenAI API is used.
+Docker is used only for the separately hosted Piston execution service.
 
 ## Product capabilities
 
@@ -39,11 +39,12 @@ used.
 ## Quick start
 
 1. Create a Supabase project.
-2. Copy `.env.example` to `.env.local` and add credentials.
-3. Run the SQL files in `database/migrations` in numeric order.
-4. Run `database/seed_neetcode150.sql`.
-5. Run `npm install`.
-6. Run `npm run dev`.
+2. Start self-hosted Piston and install its five RecallCode runtimes.
+3. Copy `.env.example` to `.env.local` and add credentials.
+4. Run the SQL files in `database/migrations` in numeric order.
+5. Run `database/seed_neetcode150.sql`.
+6. Run `npm install`.
+7. Run `npm run dev`.
 
 Open `http://localhost:3000`.
 

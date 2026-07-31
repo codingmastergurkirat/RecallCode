@@ -1,4 +1,5 @@
-const DEFAULT_PISTON_URL = "https://emkc.org/api/v2/piston";
+const DEFAULT_PISTON_URL = "http://127.0.0.1:2000/api/v2";
+const DEFAULT_RUN_TIMEOUT_MS = 3_000;
 
 export const supportedLanguages = [
   { id: "javascript", label: "JavaScript", monaco: "javascript" },
@@ -72,6 +73,21 @@ function getPistonHeaders(includeJson = false): Record<string, string> {
   };
 }
 
+function getRunTimeoutMs() {
+  const configured = process.env.PISTON_RUN_TIMEOUT_MS?.trim();
+  if (!configured) return DEFAULT_RUN_TIMEOUT_MS;
+
+  const value = Number(configured);
+  if (!Number.isInteger(value) || value < 100 || value > 5_000) {
+    throw new PistonServiceError(
+      "PISTON_RUN_TIMEOUT_MS must be an integer from 100 to 5000.",
+      500,
+    );
+  }
+
+  return value;
+}
+
 function assertExecutorConfigured(baseUrl: string) {
   let host = "";
   try {
@@ -88,7 +104,7 @@ function assertExecutorConfigured(baseUrl: string) {
     !process.env.PISTON_AUTH_VALUE?.trim()
   ) {
     throw new PistonServiceError(
-      "The EMKC Piston API requires authorization as of February 15, 2026. Add the exact header supplied by your executor with PISTON_AUTH_HEADER and PISTON_AUTH_VALUE, or point PISTON_API_URL at another compatible hosted Piston API.",
+      "The EMKC Piston API requires authorization as of February 15, 2026. Point PISTON_API_URL at your self-hosted Piston instance or add the exact authorization header supplied by the endpoint operator.",
       503,
     );
   }
@@ -159,6 +175,7 @@ export async function executeCode(input: {
   ).replace(/\/$/, "");
   assertExecutorConfigured(baseUrl);
   const headers = getPistonHeaders();
+  const runTimeoutMs = getRunTimeoutMs();
   const aliases = runtimeAliases[input.language];
 
   let runtimesResponse: Response;
@@ -207,13 +224,15 @@ export async function executeCode(input: {
         version: runtime.version,
         files: [
           {
-            name: `main.${extensionFor(input.language)}`,
+            name: filenameFor(input.language),
             content: input.code,
           },
         ],
         stdin: input.stdin ?? "",
         compile_timeout: 10_000,
-        run_timeout: 5_000,
+        run_timeout: runTimeoutMs,
+        compile_cpu_time: 10_000,
+        run_cpu_time: runTimeoutMs,
         compile_memory_limit: 512_000_000,
         run_memory_limit: 256_000_000,
       }),
@@ -252,7 +271,7 @@ export async function executeCode(input: {
   };
 }
 
-function extensionFor(language: SupportedLanguage) {
+function filenameFor(language: SupportedLanguage) {
   const extensions: Record<SupportedLanguage, string> = {
     javascript: "js",
     typescript: "ts",
@@ -260,7 +279,7 @@ function extensionFor(language: SupportedLanguage) {
     java: "java",
     cpp: "cpp",
   };
-  return extensions[language];
+  return language === "java" ? "Main.java" : `main.${extensions[language]}`;
 }
 
 export function executionSucceeded(result: ExecutionResult) {

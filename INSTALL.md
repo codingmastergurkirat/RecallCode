@@ -6,7 +6,7 @@
 - npm 10 or newer
 - A Supabase project
 - A Groq key, Gemini key, or both for learning-pack and tutor features
-- Network access to the configured Piston API
+- Docker Desktop with Linux containers, or a Linux Docker host, for Piston
 
 ## Install
 
@@ -21,7 +21,8 @@ On macOS or Linux, replace the final command with
 `cp .env.example .env.local`.
 
 Fill `.env.local` using [ENVIRONMENT.md](ENVIRONMENT.md), configure Supabase
-using [SUPABASE_SETUP.md](SUPABASE_SETUP.md), then start the app:
+using [SUPABASE_SETUP.md](SUPABASE_SETUP.md), and start the local execution
+service using [PISTON_SETUP.md](PISTON_SETUP.md). Then start the app:
 
 ```bash
 npm run dev
@@ -49,7 +50,8 @@ reports why the learning pack was not created.
 2. Run all migrations.
 3. Load the metadata seed.
 4. Enable email and Google authentication.
-5. add environment variables.
-6. Start Next.js.
-7. Create an account and confirm the profile row exists.
-8. Submit a small program and confirm learning records are created.
+5. Start Piston and install the required runtimes.
+6. Add environment variables.
+7. Start Next.js.
+8. Create an account and confirm the profile row exists.
+9. Submit a small program and confirm learning records are created.

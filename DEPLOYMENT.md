@@ -8,8 +8,10 @@ RecallCode targets Vercel.
 2. Push the repository to GitHub, GitLab, or Bitbucket.
 3. Create a Vercel project from the repository.
 4. Keep Framework Preset set to Next.js.
-5. Add every variable from [ENVIRONMENT.md](ENVIRONMENT.md).
-6. Deploy.
+5. Deploy Piston on a separate Docker-capable Linux host by following
+   [PISTON_SETUP.md](PISTON_SETUP.md).
+6. Add every variable from [ENVIRONMENT.md](ENVIRONMENT.md).
+7. Deploy.
 
 No custom build command is required. Vercel uses `npm run build`.
 
@@ -41,6 +43,8 @@ preview origins explicitly if authentication must work on preview deployments.
 
 ## Operational notes
 
-The public Piston endpoint may enforce its own capacity limits. Use a controlled
-Piston deployment for production workloads. Set provider spend/rate limits for
-Groq and Gemini. Monitor Vercel function logs and Supabase Auth/Postgres logs.
+Vercel cannot connect to `127.0.0.1` on your computer. Production must use the
+public HTTPS hostname of your protected self-hosted Piston reverse proxy. Do not
+publish Piston's port `2000` directly. Set provider spend/rate limits for Groq
+and Gemini. Monitor the Piston host, Vercel function logs, and Supabase
+Auth/Postgres logs.

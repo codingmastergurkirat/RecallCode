@@ -47,21 +47,28 @@ test("Next.js 16 Proxy refreshes the Supabase session", async () => {
   assert.match(sessionProxy, /NextResponse\.redirect/);
 });
 
-test("Piston execution supports provider authentication and clear failures", async () => {
+test("Piston execution defaults to self-hosted Docker with protected production access", async () => {
   const service = await read("services/piston.service.ts");
   const environment = await read(".env.example");
   const setup = await read("PISTON_SETUP.md");
+  assert.match(service, /http:\/\/127\.0\.0\.1:2000\/api\/v2/);
   assert.match(service, /PISTON_AUTH_HEADER/);
   assert.match(service, /PISTON_AUTH_VALUE/);
   assert.match(service, /PistonServiceError/);
-  assert.match(service, /February 15, 2026/);
+  assert.match(service, /PISTON_RUN_TIMEOUT_MS/);
+  assert.match(service, /run_timeout: runTimeoutMs/);
+  assert.match(service, /run_cpu_time: runTimeoutMs/);
+  assert.match(service, /Main\.java/);
+  assert.match(environment, /PISTON_API_URL=http:\/\/127\.0\.0\.1:2000\/api\/v2/);
+  assert.match(environment, /PISTON_RUN_TIMEOUT_MS=3000/);
   assert.match(environment, /PISTON_AUTH_HEADER=/);
   assert.match(environment, /PISTON_AUTH_VALUE=/);
-  assert.match(setup, /Option A: Authorized EMKC public API/);
-  assert.match(setup, /Option B: A hosted Piston-compatible provider/);
-  assert.match(setup, /Configure Vercel/);
+  assert.match(setup, /Install the RecallCode runtimes/);
+  assert.match(setup, /Local RecallCode configuration/);
+  assert.match(setup, /Production architecture/);
+  assert.match(setup, /Configure RecallCode on Vercel/);
   assert.match(setup, /Troubleshooting/);
-  assert.match(setup, /Never commit the real token/);
+  assert.match(setup, /Never expose port `2000`/);
 });
 
 test("hackathon email uses only Supabase Auth's built-in sender", async () => {
