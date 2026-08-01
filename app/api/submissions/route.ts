@@ -5,8 +5,8 @@ import { generateLearningPack } from "@/services/ai.service";
 import {
   executeCode,
   executionSucceeded,
-  PistonServiceError,
-} from "@/services/piston.service";
+  JDoodleServiceError,
+} from "@/services/jdoodle.service";
 import type { Json, SubmissionStatus } from "@/types/database";
 
 const schema = z.object({
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
           : "Submission failed.";
     return NextResponse.json(
       { error: message },
-      { status: error instanceof PistonServiceError ? error.httpStatus : 400 },
+      { status: error instanceof JDoodleServiceError ? error.httpStatus : 400 },
     );
   }
 }

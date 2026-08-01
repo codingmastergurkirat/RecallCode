@@ -3,8 +3,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import {
   executeCode,
-  PistonServiceError,
-} from "@/services/piston.service";
+  JDoodleServiceError,
+} from "@/services/jdoodle.service";
 
 const schema = z.object({
   language: z.enum(["javascript", "typescript", "python", "java", "cpp"]),
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
           : "Execution failed.";
     return NextResponse.json(
       { error: message },
-      { status: error instanceof PistonServiceError ? error.httpStatus : 400 },
+      { status: error instanceof JDoodleServiceError ? error.httpStatus : 400 },
     );
   }
 }

@@ -22,7 +22,7 @@ lib/
   supabase/            Browser, server, config, and Proxy clients
 prompts/               Versioned AI instructions
 scripts/               Deterministic seed generator
-services/              Auth, data, AI, Piston, and review logic
+services/              Auth, data, AI, JDoodle, and review logic
 tests/                 Architecture and data invariants
 types/                 Strict database and domain types
 utils/                 Reserved for focused domain utilities

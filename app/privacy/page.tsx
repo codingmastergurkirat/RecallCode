@@ -33,7 +33,7 @@ export default function PrivacyPage() {
         <section>
           <h2>Service providers</h2>
           <p>
-            Code may be sent to Piston for execution. Submitted code may be sent
+            Code may be sent to JDoodle for execution. Submitted code may be sent
             to Groq or Gemini to generate learning materials when configured.
           </p>
         </section>

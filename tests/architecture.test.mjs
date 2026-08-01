@@ -47,28 +47,31 @@ test("Next.js 16 Proxy refreshes the Supabase session", async () => {
   assert.match(sessionProxy, /NextResponse\.redirect/);
 });
 
-test("Piston execution defaults to self-hosted Docker with protected production access", async () => {
-  const service = await read("services/piston.service.ts");
+test("JDoodle execution keeps credentials server-side and maps all workspace languages", async () => {
+  const service = await read("services/jdoodle.service.ts");
+  const execution = await read("lib/execution.ts");
   const environment = await read(".env.example");
-  const setup = await read("PISTON_SETUP.md");
-  assert.match(service, /http:\/\/127\.0\.0\.1:2000\/api\/v2/);
-  assert.match(service, /PISTON_AUTH_HEADER/);
-  assert.match(service, /PISTON_AUTH_VALUE/);
-  assert.match(service, /PistonServiceError/);
-  assert.match(service, /PISTON_RUN_TIMEOUT_MS/);
-  assert.match(service, /run_timeout: runTimeoutMs/);
-  assert.match(service, /run_cpu_time: runTimeoutMs/);
-  assert.match(service, /Main\.java/);
-  assert.match(environment, /PISTON_API_URL=http:\/\/127\.0\.0\.1:2000\/api\/v2/);
-  assert.match(environment, /PISTON_RUN_TIMEOUT_MS=3000/);
-  assert.match(environment, /PISTON_AUTH_HEADER=/);
-  assert.match(environment, /PISTON_AUTH_VALUE=/);
-  assert.match(setup, /Install the RecallCode runtimes/);
-  assert.match(setup, /Local RecallCode configuration/);
-  assert.match(setup, /Production architecture/);
-  assert.match(setup, /Configure RecallCode on Vercel/);
+  const setup = await read("JDOODLE_SETUP.md");
+  assert.match(service, /https:\/\/api\.jdoodle\.com\/v1\/execute/);
+  assert.match(service, /JDOODLE_CLIENT_ID/);
+  assert.match(service, /JDOODLE_CLIENT_SECRET/);
+  assert.match(service, /JDoodleServiceError/);
+  assert.match(service, /JDOODLE_REQUEST_TIMEOUT_MS/);
+  assert.match(service, /language: "nodejs"[\s\S]*versionIndex: "7"/);
+  assert.match(service, /language: "typescript"[\s\S]*versionIndex: "1"/);
+  assert.match(service, /language: "python3"[\s\S]*versionIndex: "6"/);
+  assert.match(service, /language: "java"[\s\S]*versionIndex: "6"/);
+  assert.match(service, /language: "cpp17"[\s\S]*versionIndex: "3"/);
+  assert.match(execution, /export const supportedLanguages/);
+  assert.match(environment, /JDOODLE_CLIENT_ID=/);
+  assert.match(environment, /JDOODLE_CLIENT_SECRET=/);
+  assert.match(environment, /JDOODLE_REQUEST_TIMEOUT_MS=30000/);
+  assert.match(setup, /Create JDoodle API credentials/);
+  assert.match(setup, /Supported language mapping/);
+  assert.match(setup, /Vercel deployment/);
   assert.match(setup, /Troubleshooting/);
-  assert.match(setup, /Never expose port `2000`/);
+  assert.match(setup, /API credits/);
+  assert.doesNotMatch(environment, /NEXT_PUBLIC_JDOODLE/);
 });
 
 test("hackathon email uses only Supabase Auth's built-in sender", async () => {

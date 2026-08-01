@@ -23,7 +23,7 @@ import {
   supportedLanguages,
   type ExecutionResult,
   type SupportedLanguage,
-} from "@/services/piston.service";
+} from "@/lib/execution";
 import type { Json, Question } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";

@@ -14,12 +14,11 @@ NeetCode 150 seed contains metadata and source links only.
 - Supabase PostgreSQL and Supabase Auth
 - Official `@supabase/ssr` cookie-based session handling
 - Monaco Editor, Recharts, Lucide React
-- Self-hosted Piston in Docker for isolated code execution
+- JDoodle Compiler REST API for code execution
 - Groq AI with automatic Gemini fallback
 - Vercel deployment target
 
 No Clerk, NextAuth, Auth.js, Firebase, Prisma, MongoDB, or OpenAI API is used.
-Docker is used only for the separately hosted Piston execution service.
 
 ## Product capabilities
 
@@ -30,7 +29,7 @@ Docker is used only for the separately hosted Piston execution service.
 - Automatic profile row creation through an `auth.users` trigger
 - Analytics dashboard, streaks, activity, weak patterns, and mastery
 - Searchable/filterable NeetCode 150 library
-- Five-language Monaco workspace and Piston execution
+- Five-language Monaco workspace and JDoodle execution
 - Persistent submissions and atomic AI learning-pack storage
 - 5–10 generated flashcards and 4–6 active-recall prompts per learning pack
 - Server-side SM-2 review scheduling on a 1/3/7/14/30-day cadence
@@ -39,7 +38,7 @@ Docker is used only for the separately hosted Piston execution service.
 ## Quick start
 
 1. Create a Supabase project.
-2. Start self-hosted Piston and install its five RecallCode runtimes.
+2. Create JDoodle Compiler API credentials.
 3. Copy `.env.example` to `.env.local` and add credentials.
 4. Run the SQL files in `database/migrations` in numeric order.
 5. Run `database/seed_neetcode150.sql`.
@@ -67,8 +66,7 @@ npm run build
 - [Supabase setup](SUPABASE_SETUP.md)
 - [Environment](ENVIRONMENT.md)
 - [AI](AI.md)
-- [Piston setup](PISTON_SETUP.md)
-- [Piston execution internals](PISTON.md)
+- [JDoodle setup and execution](JDOODLE_SETUP.md)
 - [Project structure](PROJECT_STRUCTURE.md)
 - [Deployment](DEPLOYMENT.md)
 - [Contributing](CONTRIBUTING.md)

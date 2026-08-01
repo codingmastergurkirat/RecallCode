@@ -6,7 +6,7 @@
 - npm 10 or newer
 - A Supabase project
 - A Groq key, Gemini key, or both for learning-pack and tutor features
-- Docker Desktop with Linux containers, or a Linux Docker host, for Piston
+- A JDoodle account with Compiler API credentials
 
 ## Install
 
@@ -21,8 +21,8 @@ On macOS or Linux, replace the final command with
 `cp .env.example .env.local`.
 
 Fill `.env.local` using [ENVIRONMENT.md](ENVIRONMENT.md), configure Supabase
-using [SUPABASE_SETUP.md](SUPABASE_SETUP.md), and start the local execution
-service using [PISTON_SETUP.md](PISTON_SETUP.md). Then start the app:
+using [SUPABASE_SETUP.md](SUPABASE_SETUP.md), and configure code execution using
+[JDOODLE_SETUP.md](JDOODLE_SETUP.md). Then start the app:
 
 ```bash
 npm run dev
@@ -50,7 +50,7 @@ reports why the learning pack was not created.
 2. Run all migrations.
 3. Load the metadata seed.
 4. Enable email and Google authentication.
-5. Start Piston and install the required runtimes.
+5. Add the JDoodle client ID and secret.
 6. Add environment variables.
 7. Start Next.js.
 8. Create an account and confirm the profile row exists.
